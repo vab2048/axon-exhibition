@@ -1,0 +1,12 @@
+# When using Java modules you declare your service provider implementations
+# in the module-info.java file rather than in this META-INF.services file.
+# However, I've left this file for posterity and for those who do not want to use
+# Java modules to have an example of how to get things to work.
+###############################################################################
+
+# List of fully qualified classes names which we want to add to the content type converter.
+# The content type converter is used by the Axon serializer to convert between
+# different types. In this case our additional content type converters will allow us to
+# convert between byte arrays (byte[]) and PGobjects (of the type jsonb within the DB).
+io.github.vab2048.axon.exhibition.app.config.PostgreSqlBytesToJsonbConverter
+io.github.vab2048.axon.exhibition.app.config.PostgreSqlJsonbToBytesConverter
