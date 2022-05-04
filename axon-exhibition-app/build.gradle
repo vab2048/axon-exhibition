@@ -1,0 +1,40 @@
+plugins {
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.flyway)
+    id 'java'
+}
+
+dependencies {
+    implementation project(":axon-exhibition-message-api")
+
+    // Dependency versions are largely managed by these 'platform' (BOM) definitions.
+    implementation platform(libs.spring.boot.bom)
+    implementation platform(libs.axon.bom)
+
+    implementation libs.axon.spring.boot.starter
+
+    implementation libs.spring.boot.starter
+    implementation libs.spring.boot.starter.web
+    implementation libs.spring.boot.starter.data.jdbc
+
+    implementation libs.springdoc.openapi.ui
+
+    implementation libs.postgresql
+
+    testImplementation libs.axon.test
+    testImplementation libs.spring.boot.starter.test
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+/*
+ * Adjust these settings to have the flyway plugin perform migrations on the specified postgres instance.
+ */
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/axon-exhibition'
+    user = 'postgres'
+    password = 'password'
+    schemas = [ 'public', 'command_side', 'query_side' ]
+}

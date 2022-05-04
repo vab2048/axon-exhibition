@@ -1,0 +1,4 @@
+rootProject.name = 'axon-exhibition'
+
+include 'axon-exhibition-message-api'
+include 'axon-exhibition-app'

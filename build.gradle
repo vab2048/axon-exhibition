@@ -1,0 +1,19 @@
+
+// Global configuration for all subprojects...
+subprojects {
+
+    // Specifically for the case where the subproject is a Java project..
+    if (project.plugins.findPlugin("java")) {
+
+        // All Java projects must be aligned to this single Java toolchain version.
+        java {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(17)
+            }
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}

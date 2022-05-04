@@ -1,0 +1,12 @@
+plugins {
+     id 'java'
+}
+
+
+dependencies {
+     // Dependency versions are largely managed by these 'platform' (BOM) definitions.
+     implementation platform(libs.spring.boot.bom)
+     implementation platform(libs.axon.bom)
+
+     implementation libs.axon.spring.boot.starter
+}
