@@ -1,8 +1,11 @@
 package io.github.vab2048.axon.exhibition.app.config;
 
+import io.github.vab2048.axon.exhibition.app.command.account.AccountEmailAddressConstraintProjection;
 import org.axonframework.common.jdbc.ConnectionProvider;
 import org.axonframework.common.transaction.TransactionManager;
 import org.axonframework.config.Configurer;
+import org.axonframework.config.EventProcessingConfigurer;
+import org.axonframework.eventhandling.PropagatingErrorHandler;
 import org.axonframework.eventhandling.tokenstore.jdbc.JdbcTokenStore;
 import org.axonframework.eventhandling.tokenstore.jdbc.TokenSchema;
 import org.axonframework.eventsourcing.eventstore.EmbeddedEventStore;
@@ -31,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationAxonConfiguration {
     private static final Logger log = LoggerFactory.getLogger(ApplicationAxonConfiguration.class);
+    private static final LoggingInterceptor<Message<?>> LOGGING_INTERCEPTOR = new LoggingInterceptor<>();
 
     /* Table names for the app's command side */
     private static final String DB_SCHEMA_COMMAND_SIDE = "command_side";
@@ -110,26 +114,31 @@ public class ApplicationAxonConfiguration {
     @Autowired
     public void configureLoggingInterceptor(
             @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") Configurer configurer) {
-        log.info("Configuring logging interceptor..");
-
-        LoggingInterceptor<Message<?>> loggingInterceptor = new LoggingInterceptor<>();
-
         // Registers the LoggingInterceptor on all infrastructure once they've been initialized by the Configurer:
         configurer.onInitialize(config -> {
             config.onStart(Phase.INSTRUCTION_COMPONENTS + 1, () -> {
-                config.commandBus().registerHandlerInterceptor(loggingInterceptor);
-                config.commandBus().registerDispatchInterceptor(loggingInterceptor);
-                config.eventBus().registerDispatchInterceptor(loggingInterceptor);
-                config.queryBus().registerHandlerInterceptor(loggingInterceptor);
-                config.queryBus().registerDispatchInterceptor(loggingInterceptor);
-                config.queryUpdateEmitter().registerDispatchInterceptor(loggingInterceptor);
+                config.commandBus().registerHandlerInterceptor(LOGGING_INTERCEPTOR);
+                config.commandBus().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
+                config.eventBus().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
+                config.queryBus().registerHandlerInterceptor(LOGGING_INTERCEPTOR);
+                config.queryBus().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
+                config.queryUpdateEmitter().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
             });
         });
-
-        // Registers a default Handler Interceptor for all Event Processors:
-        configurer.eventProcessing()
-                .registerDefaultHandlerInterceptor((config, processorName) -> loggingInterceptor);
     }
 
 
+
+    @Autowired
+    public void configureProcessingGroupErrorHandling(EventProcessingConfigurer processingConfigurer) {
+        // Defaults for all handlers...
+        processingConfigurer.registerDefaultHandlerInterceptor((config, processorName) -> LOGGING_INTERCEPTOR);
+
+        // Specific configuration for the AccountEmailAddressConstraintProjection processing group...
+        // - As a subscribing event processor
+        // - Which propagates errors.
+        processingConfigurer.registerSubscribingEventProcessor(AccountEmailAddressConstraintProjection.PROCESSING_GROUP_NAME);
+        processingConfigurer.registerListenerInvocationErrorHandler(AccountEmailAddressConstraintProjection.PROCESSING_GROUP_NAME,
+                conf -> PropagatingErrorHandler.instance());
+    }
 }
