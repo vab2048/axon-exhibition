@@ -5,6 +5,7 @@ import java.util.UUID;
 public final class AccountControllerDTOs {
     private AccountControllerDTOs() { /* Non instantiable class */ }
 
-    public record CreateAccountResponseBody(UUID id) {}
+    public record CreateAccountRequestBody(String emailAddress) {}
+    public record CreateAccountResponseBody(UUID id, String emailAddress) {}
 
 }

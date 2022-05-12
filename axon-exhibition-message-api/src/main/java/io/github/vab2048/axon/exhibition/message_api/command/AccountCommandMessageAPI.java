@@ -10,8 +10,8 @@ import java.util.UUID;
 public class AccountCommandMessageAPI {
     private AccountCommandMessageAPI() { /* Non instantiable class */ }
 
-    public record CreateNewAccountCommand(@TargetAggregateIdentifier UUID accountId) {}
-    public record NewAccountCreatedEvent(UUID accountId) {}
+    public record CreateNewAccountCommand(@TargetAggregateIdentifier UUID accountId, String emailAddress) {}
+    public record NewAccountCreatedEvent(UUID accountId, String emailAddress) {}
 
     public record CreditAccountCommand(@TargetAggregateIdentifier UUID accountId, UUID paymentId, long amount) {}
     public record AccountCreditedEvent(UUID accountId, UUID paymentId, long amount) {}
