@@ -2,6 +2,7 @@ package io.github.vab2048.axon.exhibition.app.controller;
 
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.InternalServerErrorResponseBody;
 import io.github.vab2048.axon.exhibition.app.query.account.AccountView;
+import io.github.vab2048.axon.exhibition.message_api.controller.AccountControllerDTOs.CreateAccountRequestBody;
 import io.github.vab2048.axon.exhibition.message_api.controller.AccountControllerDTOs.CreateAccountResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +22,7 @@ import java.util.UUID;
 import static io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.EXAMPLE_UUID_VALUE;
 
 @Tags(value = @Tag(name = "Accounts", description = "Manage our faux 'bank' accounts."))
-public interface Account {
+public interface Accounts {
 
     @Operation(summary = "Create a new account.",
             operationId = "create-new-account")
@@ -32,7 +33,7 @@ public interface Account {
             content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @PostMapping("/accounts")
-    ResponseEntity<CreateAccountResponseBody> createNewAccount();
+    ResponseEntity<CreateAccountResponseBody> createNewAccount(CreateAccountRequestBody requestBody);
 
     @Operation(summary = "Retrieve account details.",
             operationId = "get-account")

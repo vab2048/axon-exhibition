@@ -3,25 +3,25 @@ package io.github.vab2048.axon.exhibition.app.controller;
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.InternalServerErrorResponseBody;
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.MakePaymentRequestBody;
 import io.github.vab2048.axon.exhibition.app.query.payment.PaymentView;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.util.UUID;
 
 import static io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.EXAMPLE_UUID_VALUE;
 
 @Tags(value = @Tag(name = "Payments", description = "Make a payment between two bank accounts."))
-public interface Payment {
+public interface Payments {
 
     @Operation(summary = "Make a payment between two accounts.",
             operationId = "create-new-payment")
@@ -45,5 +45,12 @@ public interface Payment {
     })
     @GetMapping("/payments/{id}")
     PaymentView getPaymentView(@PathVariable @Parameter(example = EXAMPLE_UUID_VALUE) UUID id);
+
+
+    @PostMapping("/scheduled-payments")
+    void createdScheduledPayment();
+
+    @GetMapping("/scheduled-payments/{id}")
+    void getScheduledPayment(@PathVariable String id);
 
 }

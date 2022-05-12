@@ -14,13 +14,13 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-public class PaymentController implements Payment {
-    private static final Logger log = LoggerFactory.getLogger(PaymentController.class);
+public class PaymentsController implements Payments {
+    private static final Logger log = LoggerFactory.getLogger(PaymentsController.class);
 
     private final QueryGateway queryGateway;
     private final CommandGateway commandGateway;
 
-    public PaymentController(QueryGateway queryGateway, CommandGateway commandGateway) {
+    public PaymentsController(QueryGateway queryGateway, CommandGateway commandGateway) {
         this.queryGateway = queryGateway;
         this.commandGateway = commandGateway;
     }
@@ -45,5 +45,16 @@ public class PaymentController implements Payment {
             log.error(msg, e);
             throw new RuntimeException(msg, e);
         }
+    }
+
+
+    @Override
+    public void createdScheduledPayment() {
+        throw new IllegalStateException("Not yet implemented");
+    }
+
+    @Override
+    public void getScheduledPayment(String id) {
+        throw new IllegalStateException("Not yet implemented");
     }
 }

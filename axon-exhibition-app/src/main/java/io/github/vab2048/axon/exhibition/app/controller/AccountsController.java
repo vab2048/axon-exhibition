@@ -2,6 +2,7 @@ package io.github.vab2048.axon.exhibition.app.controller;
 
 import io.github.vab2048.axon.exhibition.app.query.account.AccountView;
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.CreateNewAccountCommand;
+import io.github.vab2048.axon.exhibition.message_api.controller.AccountControllerDTOs.CreateAccountRequestBody;
 import io.github.vab2048.axon.exhibition.message_api.controller.AccountControllerDTOs.CreateAccountResponseBody;
 import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetAccountView;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -16,21 +17,22 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-public class AccountController implements Account {
-    private static final Logger log = LoggerFactory.getLogger(AccountController.class);
+public class AccountsController implements Accounts {
+    private static final Logger log = LoggerFactory.getLogger(AccountsController.class);
 
     private final QueryGateway queryGateway;
     private final CommandGateway commandGateway;
 
-    public AccountController(QueryGateway queryGateway, CommandGateway commandGateway) {
+    public AccountsController(QueryGateway queryGateway, CommandGateway commandGateway) {
         this.queryGateway = queryGateway;
         this.commandGateway = commandGateway;
     }
 
     @Override
-    public ResponseEntity<CreateAccountResponseBody> createNewAccount() {
+    public ResponseEntity<CreateAccountResponseBody> createNewAccount(CreateAccountRequestBody requestBody) {
         // Create the new account...
-        UUID id = commandGateway.sendAndWait(new CreateNewAccountCommand(UUID.randomUUID()));
+        String emailAddress = requestBody.emailAddress();
+        UUID id = commandGateway.sendAndWait(new CreateNewAccountCommand(UUID.randomUUID(), emailAddress));
 
         // Get the URI for the newly created REST resource...
         var locationURI = ServletUriComponentsBuilder
@@ -39,7 +41,7 @@ public class AccountController implements Account {
 
         return ResponseEntity
                 .created(locationURI)
-                .body(new CreateAccountResponseBody(id));
+                .body(new CreateAccountResponseBody(id, emailAddress));
     }
 
     @Override
