@@ -21,22 +21,19 @@ Technologies used include:
 
 ## TODO
 
-- Understand why `@QueryHandler` annotated methods cause issues with the Java module system.
-- Fix up SQL - command side and query side schemas don't make sense when the saga (command side) goes in the
-  token_entry table (which is currently in the query side schema)
-- Look at documentation for indexes and see how SQL compares.
-    - Understand and remove unnecessary tables/sequences
 - Do controller OpenAPI documentation - tidy things up
 - Finish controller endpoint (return 201) and other endpoints
-- Add an atomic command side projection
-    - Test the subscription tracking processor
-    - Maintain the invariant that an account must be linked to a unique email address (as an example).
 - Add workflow simulator endpoints to the controller.
 - Add a deadline for a scheduled payment
 - Add unit tests
 - Add integration tests
 - Add snapshots to aggregates.
 - Add a subscription query
+- Understand why `@QueryHandler` annotated methods cause issues with the Java module system.
+- Fix up SQL - command side and query side schemas don't make sense when the saga (command side) goes in the
+  token_entry table (which is currently in the query side schema)
+- Look at documentation for indexes and see how SQL compares.
+  - Understand and remove unnecessary tables/sequences
 
 ## Usage
 
