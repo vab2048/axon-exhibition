@@ -1,4 +1,4 @@
-package io.github.vab2048.axon.exhibition.app.command;
+package io.github.vab2048.axon.exhibition.app.command.account;
 
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.*;
 import org.axonframework.commandhandling.CommandHandler;
@@ -27,11 +27,12 @@ public class AccountAggregate {
      */
     private long balance;
 
-    AccountAggregate() {}
+    @Deprecated
+    AccountAggregate() { /* For framework use only. */ }
 
     @CommandHandler
     AccountAggregate(CreateNewAccountCommand cmd) {
-        apply(new NewAccountCreatedEvent(cmd.accountId()));
+        apply(new NewAccountCreatedEvent(cmd.accountId(), cmd.emailAddress()));
     }
 
     @EventSourcingHandler

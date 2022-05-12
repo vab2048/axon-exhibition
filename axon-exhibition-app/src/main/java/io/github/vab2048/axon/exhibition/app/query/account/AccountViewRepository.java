@@ -1,4 +1,4 @@
-package io.github.vab2048.axon.exhibition.app.query;
+package io.github.vab2048.axon.exhibition.app.query.account;
 
 import org.springframework.data.repository.CrudRepository;
 

@@ -1,9 +1,8 @@
-package io.github.vab2048.axon.exhibition.app.query;
+package io.github.vab2048.axon.exhibition.app.query.account;
 
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.AccountCreditedEvent;
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.AccountDebitedEvent;
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.NewAccountCreatedEvent;
-import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI;
 import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetAccountView;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;

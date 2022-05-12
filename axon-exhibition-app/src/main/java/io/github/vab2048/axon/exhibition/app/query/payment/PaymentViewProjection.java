@@ -1,10 +1,9 @@
-package io.github.vab2048.axon.exhibition.app.query;
+package io.github.vab2048.axon.exhibition.app.query.payment;
 
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.PaymentCompletedEvent;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.PaymentCreatedEvent;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.PaymentFailedEvent;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentStatus;
-import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI;
 import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetPaymentView;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;

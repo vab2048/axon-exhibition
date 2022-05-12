@@ -1,4 +1,4 @@
-package io.github.vab2048.axon.exhibition.app.query;
+package io.github.vab2048.axon.exhibition.app.query.payment;
 
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentStatus;
 import org.springframework.data.annotation.Id;

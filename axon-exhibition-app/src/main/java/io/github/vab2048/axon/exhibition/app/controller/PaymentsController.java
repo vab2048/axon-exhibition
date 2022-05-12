@@ -1,7 +1,7 @@
 package io.github.vab2048.axon.exhibition.app.controller;
 
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.MakePaymentRequestBody;
-import io.github.vab2048.axon.exhibition.app.query.PaymentView;
+import io.github.vab2048.axon.exhibition.app.query.payment.PaymentView;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.CreatePaymentCommand;
 import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI;
 import org.axonframework.commandhandling.gateway.CommandGateway;

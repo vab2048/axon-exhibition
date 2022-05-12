@@ -1,4 +1,4 @@
-package io.github.vab2048.axon.exhibition.app.command;
+package io.github.vab2048.axon.exhibition.app.command.payment;
 
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.*;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentStatus;
