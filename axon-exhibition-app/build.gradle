@@ -21,6 +21,7 @@ dependencies {
 
     implementation libs.postgresql
 
+    testImplementation project(":axon-exhibition-test-utils")
     testImplementation libs.axon.test
     testImplementation libs.spring.boot.starter.test
 }
