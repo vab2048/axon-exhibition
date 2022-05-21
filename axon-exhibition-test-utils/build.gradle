@@ -1,0 +1,12 @@
+plugins {
+     id 'java'
+}
+
+
+dependencies {
+     // Project dependencies...
+     implementation project(':axon-exhibition-message-api')
+
+     implementation libs.bundles.apache.commons
+
+}
