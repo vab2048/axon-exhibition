@@ -5,7 +5,7 @@ import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessa
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.CreditAccountCommand;
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.DebitAccountCommand;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.MarkPaymentAsCompletedCommand;
-import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.PaymentCreatedEvent;
+import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.PaymentSettlementTriggeredEvent;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
@@ -18,11 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.UUID;
 
 /**
- * Process manager for a payment i.e. a transfer of money from one account to another.
+ * Process manager for a payment settlement i.e. a transfer of money from one account to another.
  */
 @Saga
-public class PaymentSaga {
-    private static final Logger log = LoggerFactory.getLogger(PaymentSaga.class);
+public class PaymentSettlementSaga {
+    private static final Logger log = LoggerFactory.getLogger(PaymentSettlementSaga.class);
+    public static final String PAYMENT_ID_ASSOCIATION_PROPERTY = "paymentId";
 
     private transient CommandGateway commandGateway;
 
@@ -36,7 +37,7 @@ public class PaymentSaga {
     private long amount;
 
     @Deprecated
-    public PaymentSaga() {
+    public PaymentSettlementSaga() {
         /* For framework use only. */
     }
 
@@ -67,8 +68,8 @@ public class PaymentSaga {
     }
 
     @StartSaga
-    @SagaEventHandler(associationProperty = "paymentId")
-    public void on(PaymentCreatedEvent event) {
+    @SagaEventHandler(associationProperty = PAYMENT_ID_ASSOCIATION_PROPERTY)
+    public void on(PaymentSettlementTriggeredEvent event) {
         this.sourceAccountId = event.sourceAccountId();
         this.destinationAccountId = event.destinationAccountId();
         this.amount = event.amount();
@@ -76,21 +77,17 @@ public class PaymentSaga {
         commandGateway.sendAndWait(cmd);
     }
 
-    @SagaEventHandler(associationProperty = "paymentId")
+    @SagaEventHandler(associationProperty = PAYMENT_ID_ASSOCIATION_PROPERTY)
     public void on(AccountDebitedEvent event) {
         // On successfully debiting one side of the transfer we need to then credit the other.
         var cmd = new CreditAccountCommand(destinationAccountId, event.paymentId(), event.amount());
         commandGateway.sendAndWait(cmd);
     }
 
-    @SagaEventHandler(associationProperty = "paymentId")
+    @SagaEventHandler(associationProperty = PAYMENT_ID_ASSOCIATION_PROPERTY)
     @EndSaga
     public void on(AccountCreditedEvent event) {
         // When the account has been credited then mark the transfer aggregate as being complete.
         commandGateway.sendAndWait(new MarkPaymentAsCompletedCommand(event.paymentId()));
     }
-
-
-
-
 }

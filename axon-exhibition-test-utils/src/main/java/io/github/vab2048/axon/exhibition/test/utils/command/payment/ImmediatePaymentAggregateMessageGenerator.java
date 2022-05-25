@@ -3,14 +3,15 @@ package io.github.vab2048.axon.exhibition.test.utils.command.payment;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.*;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentStatus;
 
+import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Convenient utility class for tests to use to generate commands/events for the payment aggregate.
+ * Convenient utility class for tests to use to generate commands/events for an immediate payment aggregate.
  */
-public class PaymentAggregateMessageGenerator {
-    public PaymentAggregateMessageGenerator() {}
+public class ImmediatePaymentAggregateMessageGenerator {
+    public ImmediatePaymentAggregateMessageGenerator() {}
 
     /* ***********************************************************************
      *                            Scenario Records
@@ -20,17 +21,18 @@ public class PaymentAggregateMessageGenerator {
      * Each scenario always begins from creation and contains the
      * data for each of the steps for that particular scenario.
      * ***********************************************************************/
-    public record PaymentCreation(
-            CreatePaymentCommand cmd,
-            PaymentCreatedEvent evt) {}
+    public record ImmediatePaymentCreation(
+            CreateImmediatePaymentCommand cmd,
+            ImmediatePaymentCreatedEvent evt,
+            PaymentSettlementTriggeredEvent evt2) {}
 
-    public record CompletedPayment(
-            PaymentCreation paymentCreation,
+    public record CompletedImmediatePayment(
+            ImmediatePaymentCreation immediatePaymentCreation,
             MarkPaymentAsCompletedCommand cmd,
             PaymentCompletedEvent evt) {}
 
-    public record FailedPayment(
-            PaymentCreation paymentCreation,
+    public record FailedImmediatePayment(
+            ImmediatePaymentCreation immediatePaymentCreation,
             MarkPaymentAsFailedCommand cmd,
             PaymentFailedEvent evt) {}
 
@@ -41,29 +43,30 @@ public class PaymentAggregateMessageGenerator {
      * The scenario methods contain the logic to create the simulated commands
      * and events for a particular scenario.
      * ***********************************************************************/
-    public PaymentCreation paymentCreation() {
+    public ImmediatePaymentCreation immediatePaymentCreation(Instant paymentInitiationTime) {
         var paymentId = UUID.randomUUID();
         var sourceAccountId = UUID.randomUUID();
         var destinationAccountId = UUID.randomUUID();
         var amount = ThreadLocalRandom.current().nextInt();
-        var cmd = new CreatePaymentCommand(paymentId, sourceAccountId, destinationAccountId, amount);
-        var evt = new PaymentCreatedEvent(paymentId, sourceAccountId, destinationAccountId, amount, PaymentStatus.CREATED);
-        return new PaymentCreation(cmd, evt);
+        var cmd = new CreateImmediatePaymentCommand(paymentId, sourceAccountId, destinationAccountId, amount);
+        var evt = new ImmediatePaymentCreatedEvent(paymentId, sourceAccountId, destinationAccountId, amount, PaymentStatus.CREATED, paymentInitiationTime);
+        var evt2 = new PaymentSettlementTriggeredEvent(paymentId, sourceAccountId, destinationAccountId, amount, paymentInitiationTime);
+        return new ImmediatePaymentCreation(cmd, evt, evt2);
     }
 
-    public CompletedPayment completedPayment() {
-        var paymentCreation = paymentCreation();
+    public CompletedImmediatePayment completedPayment(Instant paymentInitiationTime) {
+        var paymentCreation = immediatePaymentCreation(paymentInitiationTime);
         var paymentId = paymentCreation.evt().paymentId();
         var markPaymentAsCompletedCmd = new MarkPaymentAsCompletedCommand(paymentId);
         var paymentCompletedEvt = new PaymentCompletedEvent(paymentId);
-        return new CompletedPayment(paymentCreation, markPaymentAsCompletedCmd, paymentCompletedEvt);
+        return new CompletedImmediatePayment(paymentCreation, markPaymentAsCompletedCmd, paymentCompletedEvt);
     }
 
-    public FailedPayment failedPayment() {
-        var paymentCreation = paymentCreation();
+    public FailedImmediatePayment failedPayment(Instant paymentInitiationTime) {
+        var paymentCreation = immediatePaymentCreation(paymentInitiationTime);
         var paymentId = paymentCreation.evt().paymentId();
         var markPaymentAsFailedCmd = new MarkPaymentAsFailedCommand(paymentId);
         var paymentFailedEvt = new PaymentFailedEvent(paymentId);
-        return new FailedPayment(paymentCreation, markPaymentAsFailedCmd, paymentFailedEvt);
+        return new FailedImmediatePayment(paymentCreation, markPaymentAsFailedCmd, paymentFailedEvt);
     }
 }

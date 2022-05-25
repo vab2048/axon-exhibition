@@ -1,7 +1,6 @@
 package io.github.vab2048.axon.exhibition.app.controller;
 
-import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.InternalServerErrorResponseBody;
-import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.MakePaymentRequestBody;
+import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.*;
 import io.github.vab2048.axon.exhibition.app.query.payment.PaymentView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,10 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -27,12 +24,12 @@ public interface Payments {
             operationId = "create-new-payment")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Account Created",
-                    content = @Content(schema = @Schema(implementation = UUID.class))),
+                    content = @Content(schema = @Schema(implementation = MakePaymentResponseBody.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @PostMapping("/payments")
-    UUID makePayment(@RequestBody MakePaymentRequestBody requestBody);
+    ResponseEntity<MakePaymentResponseBody> makePayment(@RequestBody MakePaymentRequestBody requestBody);
 
 
     @Operation(summary = "Retrieve payment details.",
@@ -48,9 +45,12 @@ public interface Payments {
 
 
     @PostMapping("/scheduled-payments")
-    void createdScheduledPayment();
+    ResponseEntity<MakeScheduledPaymentResponseBody> createdScheduledPayment(MakeScheduledPaymentRequestBody requestBody);
 
     @GetMapping("/scheduled-payments/{id}")
     void getScheduledPayment(@PathVariable String id);
+
+    @DeleteMapping("/scheduled-payments/{id}")
+    void cancelScheduledPayment(@PathVariable UUID id);
 
 }

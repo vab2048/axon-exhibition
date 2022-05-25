@@ -45,8 +45,8 @@ public class AccountEmailAddressConstraintProjection {
     void handleException(NewAccountCreatedEvent evt, DbActionExecutionException ex) {
         // Where the specific cause is a DuplicateKeyException then we know that we have avoided breaking the
         // uniqueness constraint, and so we rethrow a more specific exception.
-        DuplicateKeyException duplicateKeyException;  // N.B. Assignment within an if is intentional here to avoid repetition in defining the exception...
-        if( (duplicateKeyException = ExceptionUtils.throwableOfType(ex, DuplicateKeyException.class)) != null) {
+        DuplicateKeyException duplicateKeyException = ExceptionUtils.throwableOfType(ex, DuplicateKeyException.class);
+        if(duplicateKeyException != null) {
             String msg = "Account creation rejected as email address (%s) is already in use.".formatted(evt.emailAddress());
             throw new IllegalStateException(msg, duplicateKeyException);
         }

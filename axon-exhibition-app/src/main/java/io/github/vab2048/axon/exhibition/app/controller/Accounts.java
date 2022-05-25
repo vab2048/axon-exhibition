@@ -2,8 +2,8 @@ package io.github.vab2048.axon.exhibition.app.controller;
 
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.InternalServerErrorResponseBody;
 import io.github.vab2048.axon.exhibition.app.query.account.AccountView;
-import io.github.vab2048.axon.exhibition.message_api.controller.AccountControllerDTOs.CreateAccountRequestBody;
-import io.github.vab2048.axon.exhibition.message_api.controller.AccountControllerDTOs.CreateAccountResponseBody;
+import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.CreateAccountRequestBody;
+import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.CreateAccountResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

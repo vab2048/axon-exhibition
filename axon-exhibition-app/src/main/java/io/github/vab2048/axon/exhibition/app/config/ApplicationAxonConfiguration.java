@@ -3,8 +3,10 @@ package io.github.vab2048.axon.exhibition.app.config;
 import io.github.vab2048.axon.exhibition.app.command.account.AccountEmailAddressConstraintProjection;
 import org.axonframework.common.jdbc.ConnectionProvider;
 import org.axonframework.common.transaction.TransactionManager;
+import org.axonframework.config.ConfigurationScopeAwareProvider;
 import org.axonframework.config.Configurer;
 import org.axonframework.config.EventProcessingConfigurer;
+import org.axonframework.deadline.SimpleDeadlineManager;
 import org.axonframework.eventhandling.PropagatingErrorHandler;
 import org.axonframework.eventhandling.tokenstore.jdbc.JdbcTokenStore;
 import org.axonframework.eventhandling.tokenstore.jdbc.TokenSchema;
@@ -110,6 +112,15 @@ public class ApplicationAxonConfiguration {
                 .build();
     }
 
+    @Bean
+    public SimpleDeadlineManager simpleDeadlineManager(
+            @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") AxonConfiguration configuration,
+            TransactionManager transactionManager) {
+        return SimpleDeadlineManager.builder()
+                .scopeAwareProvider(new ConfigurationScopeAwareProvider(configuration))
+                .transactionManager(transactionManager)
+                .build();
+    }
 
     @Autowired
     public void configureLoggingInterceptor(
@@ -141,4 +152,6 @@ public class ApplicationAxonConfiguration {
         processingConfigurer.registerListenerInvocationErrorHandler(AccountEmailAddressConstraintProjection.PROCESSING_GROUP_NAME,
                 conf -> PropagatingErrorHandler.instance());
     }
+
+
 }

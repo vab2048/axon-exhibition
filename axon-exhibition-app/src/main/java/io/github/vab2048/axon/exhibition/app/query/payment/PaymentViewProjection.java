@@ -1,8 +1,7 @@
 package io.github.vab2048.axon.exhibition.app.query.payment;
 
-import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.PaymentCompletedEvent;
-import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.PaymentCreatedEvent;
-import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.PaymentFailedEvent;
+import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI;
+import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.*;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentStatus;
 import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetPaymentView;
 import org.axonframework.eventhandling.EventHandler;
@@ -33,7 +32,8 @@ public class PaymentViewProjection {
 
     @EventHandler
     void on(PaymentCreatedEvent event) {
-        var paymentView = new PaymentView(event.paymentId(), event.sourceAccountId(), event.destinationAccountId(), event.amount(), event.status());
+        var paymentView = new PaymentView(event.paymentId(), event.sourceAccountId(), event.destinationAccountId(),
+                event.amount(), event.status(), event.settlementInitiationTime());
         jdbcAggregateTemplate.insert(paymentView);
     }
 
@@ -41,7 +41,7 @@ public class PaymentViewProjection {
     void on(PaymentCompletedEvent event) {
         var paymentView = repository.findById(event.paymentId()).orElseThrow();
         var updatedPaymentView = new PaymentView(paymentView.paymentId(), paymentView.sourceAccountId(),
-                paymentView.destinationAccountId(), paymentView.amount(), PaymentStatus.COMPLETED);
+                paymentView.destinationAccountId(), paymentView.amount(), PaymentStatus.COMPLETED, paymentView.settlementInitiationTime());
         repository.save(updatedPaymentView);
     }
 
@@ -49,7 +49,7 @@ public class PaymentViewProjection {
     void on(PaymentFailedEvent event) {
         var paymentView = repository.findById(event.paymentId()).orElseThrow();
         var updatedPaymentView = new PaymentView(paymentView.paymentId(), paymentView.sourceAccountId(),
-                paymentView.destinationAccountId(), paymentView.amount(), PaymentStatus.FAILED);
+                paymentView.destinationAccountId(), paymentView.amount(), PaymentStatus.FAILED, paymentView.settlementInitiationTime());
         repository.save(updatedPaymentView);
     }
 

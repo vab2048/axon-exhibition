@@ -2,8 +2,8 @@ package io.github.vab2048.axon.exhibition.app.controller;
 
 import io.github.vab2048.axon.exhibition.app.query.account.AccountView;
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.CreateNewAccountCommand;
-import io.github.vab2048.axon.exhibition.message_api.controller.AccountControllerDTOs.CreateAccountRequestBody;
-import io.github.vab2048.axon.exhibition.message_api.controller.AccountControllerDTOs.CreateAccountResponseBody;
+import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.CreateAccountRequestBody;
+import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.CreateAccountResponseBody;
 import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetAccountView;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.queryhandling.QueryGateway;
