@@ -1,9 +1,7 @@
 package io.github.vab2048.axon.exhibition.app.controller;
 
-import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.MakePaymentRequestBody;
-import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.MakePaymentResponseBody;
-import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.MakeScheduledPaymentRequestBody;
-import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.MakeScheduledPaymentResponseBody;
+import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs;
+import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.*;
 import io.github.vab2048.axon.exhibition.app.query.QueryResponses.GetPaymentsQueryResponse;
 import io.github.vab2048.axon.exhibition.app.query.payment.PaymentView;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.CancelScheduledPaymentCommand;
@@ -98,7 +96,8 @@ public class PaymentsController implements Payments {
     }
 
     @Override
-    public void cancelScheduledPayment(UUID id) {
+    public ResponseEntity<?> cancelScheduledPayment(UUID id) {
         commandGateway.sendAndWait(new CancelScheduledPaymentCommand(id));
+        return ResponseEntity.noContent().build();
     }
 }

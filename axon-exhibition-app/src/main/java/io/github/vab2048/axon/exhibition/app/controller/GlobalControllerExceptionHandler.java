@@ -34,7 +34,7 @@ public class GlobalControllerExceptionHandler {
                 Request Parameters:   {}
                 Request Headers:      {}
                 """, ex.getClass(), ex.getMessage(), request, generateRequestParametersSummaryString(request),
-                generateRequestHeadersSummaryString(request));
+                generateRequestHeadersSummaryString(request), ex);
 
         return ResponseEntity.internalServerError()
                 .body(new InternalServerErrorResponseBody(Instant.now(), ex.getMessage(),

@@ -25,7 +25,7 @@ import static io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTO
 @Tags(value = @Tag(name = "Accounts", description = "Manage our faux 'bank' accounts."))
 public interface Accounts {
 
-    @Operation(summary = "Create a new account.",
+    @Operation(summary = "Create a new account. The email address must be unique across all accounts.",
             operationId = "create-new-account")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Account Created",
@@ -36,14 +36,22 @@ public interface Accounts {
     @PostMapping("/accounts")
     ResponseEntity<CreateAccountResponseBody> createNewAccount(CreateAccountRequestBody requestBody);
 
+    @Operation(summary = "Get the latest state for all account resources.",
+            operationId = "get-accounts")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Accounts State",
+                    content = @Content(schema = @Schema(implementation = GetAccountsQueryResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
+    })
     @GetMapping("/accounts")
     GetAccountsQueryResponse getAccounts();
 
 
-    @Operation(summary = "Retrieve account details.",
+    @Operation(summary = "Get the latest state for a specific account resource.",
             operationId = "get-account")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Account View",
+            @ApiResponse(responseCode = "200", description = "Account State",
                     content = @Content(schema = @Schema(implementation = AccountView.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
