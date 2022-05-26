@@ -11,6 +11,8 @@ dependencies {
     implementation platform(libs.spring.boot.bom)
     implementation platform(libs.axon.bom)
 
+    implementation libs.bundles.apache.commons
+
     implementation libs.axon.spring.boot.starter
 
     implementation libs.spring.boot.starter
