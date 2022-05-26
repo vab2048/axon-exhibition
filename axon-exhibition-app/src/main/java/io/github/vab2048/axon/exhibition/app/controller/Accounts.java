@@ -1,9 +1,10 @@
 package io.github.vab2048.axon.exhibition.app.controller;
 
-import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.InternalServerErrorResponseBody;
-import io.github.vab2048.axon.exhibition.app.query.account.AccountView;
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.CreateAccountRequestBody;
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.CreateAccountResponseBody;
+import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.InternalServerErrorResponseBody;
+import io.github.vab2048.axon.exhibition.app.query.QueryResponses.GetAccountsQueryResponse;
+import io.github.vab2048.axon.exhibition.app.query.account.AccountView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,6 +35,10 @@ public interface Accounts {
     })
     @PostMapping("/accounts")
     ResponseEntity<CreateAccountResponseBody> createNewAccount(CreateAccountRequestBody requestBody);
+
+    @GetMapping("/accounts")
+    GetAccountsQueryResponse getAccounts();
+
 
     @Operation(summary = "Retrieve account details.",
             operationId = "get-account")

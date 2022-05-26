@@ -1,10 +1,12 @@
 package io.github.vab2048.axon.exhibition.app.controller;
 
-import io.github.vab2048.axon.exhibition.app.query.account.AccountView;
-import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.CreateNewAccountCommand;
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.CreateAccountRequestBody;
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.CreateAccountResponseBody;
-import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetAccountView;
+import io.github.vab2048.axon.exhibition.app.query.QueryResponses.GetAccountsQueryResponse;
+import io.github.vab2048.axon.exhibition.app.query.account.AccountView;
+import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.CreateNewAccountCommand;
+import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetAccountQuery;
+import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetAccountsQuery;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.queryhandling.QueryGateway;
 import org.slf4j.Logger;
@@ -45,8 +47,20 @@ public class AccountsController implements Accounts {
     }
 
     @Override
+    public  GetAccountsQueryResponse getAccounts() {
+        var query = new GetAccountsQuery();
+        try {
+            return queryGateway.query(query, GetAccountsQueryResponse.class).get();
+        } catch (InterruptedException | ExecutionException e) {
+            var msg = "Error in executing query: %s".formatted(query);
+            log.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
+    }
+
+    @Override
     public AccountView getAccount(UUID id) {
-        var query = new GetAccountView(id);
+        var query = new GetAccountQuery(id);
         try {
             return queryGateway.query(query, AccountView.class).get();
         } catch (InterruptedException | ExecutionException e) {

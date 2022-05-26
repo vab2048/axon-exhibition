@@ -4,12 +4,13 @@ import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.MakeP
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.MakePaymentResponseBody;
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.MakeScheduledPaymentRequestBody;
 import io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.MakeScheduledPaymentResponseBody;
+import io.github.vab2048.axon.exhibition.app.query.QueryResponses.GetPaymentsQueryResponse;
 import io.github.vab2048.axon.exhibition.app.query.payment.PaymentView;
-import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.CancelScheduledPaymentCommand;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.CreateImmediatePaymentCommand;
 import io.github.vab2048.axon.exhibition.message_api.command.PaymentCommandMessageAPI.CreateScheduledPaymentCommand;
-import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI;
+import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetPaymentQuery;
+import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetPaymentsQuery;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.queryhandling.QueryGateway;
 import org.slf4j.Logger;
@@ -52,8 +53,20 @@ public class PaymentsController implements Payments {
     }
 
     @Override
+    public GetPaymentsQueryResponse getPayments() {
+        var query = new GetPaymentsQuery();
+        try {
+            return queryGateway.query(query, GetPaymentsQueryResponse.class).get();
+        } catch (InterruptedException | ExecutionException e) {
+            var msg = "Error in executing query: %s".formatted(query);
+            log.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
+    }
+
+    @Override
     public PaymentView getPaymentView(UUID id) {
-        var query = new QueryAPI.GetPaymentView(id);
+        var query = new GetPaymentQuery(id);
         try {
             return queryGateway.query(query, PaymentView.class).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -83,12 +96,6 @@ public class PaymentsController implements Payments {
                 .created(locationURI)
                 .body(new MakeScheduledPaymentResponseBody(paymentId));
     }
-
-    @Override
-    public void getScheduledPayment(String id) {
-        throw new IllegalStateException("Not yet implemented");
-    }
-
 
     @Override
     public void cancelScheduledPayment(UUID id) {

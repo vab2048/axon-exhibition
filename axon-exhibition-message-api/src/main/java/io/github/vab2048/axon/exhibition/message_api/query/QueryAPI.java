@@ -8,7 +8,10 @@ import java.util.UUID;
 public class QueryAPI {
     private QueryAPI() { /* Non instantiable class */ }
 
-    public record GetAccountView(UUID id) {}
+    public record GetAccountsQuery() {}
+    public record GetAccountQuery(UUID id) {}
 
-    public record GetPaymentView(UUID id) {}
+    public record GetPaymentsQuery() {}
+    public record GetPaymentQuery(UUID id) {}
+
 }

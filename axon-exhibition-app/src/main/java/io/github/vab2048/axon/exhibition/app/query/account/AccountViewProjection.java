@@ -1,9 +1,13 @@
 package io.github.vab2048.axon.exhibition.app.query.account;
 
+import io.github.vab2048.axon.exhibition.app.query.QueryResponses;
+import io.github.vab2048.axon.exhibition.app.query.QueryResponses.GetAccountsQueryResponse;
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.AccountCreditedEvent;
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.AccountDebitedEvent;
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.NewAccountCreatedEvent;
-import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetAccountView;
+import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetAccountQuery;
+import io.github.vab2048.axon.exhibition.message_api.query.QueryAPI.GetAccountsQuery;
+import org.apache.commons.collections4.IterableUtils;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.slf4j.Logger;
@@ -56,8 +60,16 @@ public class AccountViewProjection {
     }
 
     @QueryHandler
-    public AccountView getAccount(GetAccountView query) {
+    public AccountView getAccount(GetAccountQuery query) {
         log.debug("Handling: {}", query);
         return repository.findById(query.id()).orElseThrow();
     }
+
+    @QueryHandler
+    public GetAccountsQueryResponse getAccounts(GetAccountsQuery query) {
+        log.debug("Handling: {}", query);
+        return new GetAccountsQueryResponse(IterableUtils.toList(repository.findAll()));
+    }
+
+
 }
