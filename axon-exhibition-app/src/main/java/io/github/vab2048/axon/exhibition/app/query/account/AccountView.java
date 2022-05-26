@@ -8,6 +8,7 @@ import java.util.UUID;
 @Table(AccountView.TABLE_NAME)
 public record AccountView(
         @Id @Column("account_id") UUID accountId,
+        @Column("email_address") String emailAddress,
         @Column("balance") Long balance) {
 
     public static final String TABLE_NAME = "query_side\".\"account_view";

@@ -11,7 +11,7 @@ public class AccountCommandMessageAPI {
     private AccountCommandMessageAPI() { /* Non instantiable class */ }
 
     public record CreateNewAccountCommand(@TargetAggregateIdentifier UUID accountId, String emailAddress) {}
-    public record NewAccountCreatedEvent(UUID accountId, String emailAddress) {}
+    public record NewAccountCreatedEvent(UUID accountId, String emailAddress, long openingBalance) {}
 
     public record CreditAccountCommand(@TargetAggregateIdentifier UUID accountId, UUID paymentId, long amount) {}
     public record AccountCreditedEvent(UUID accountId, UUID paymentId, long amount) {}

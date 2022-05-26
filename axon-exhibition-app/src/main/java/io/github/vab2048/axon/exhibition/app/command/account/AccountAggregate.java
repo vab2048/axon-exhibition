@@ -36,7 +36,8 @@ public class AccountAggregate {
     @CommandHandler
     AccountAggregate(CreateNewAccountCommand cmd) {
         log.debug("Handling: {}", cmd);
-        apply(new NewAccountCreatedEvent(cmd.accountId(), cmd.emailAddress()));
+        var openingBalance = 0L; // Starts at 0.
+        apply(new NewAccountCreatedEvent(cmd.accountId(), cmd.emailAddress(), openingBalance));
     }
 
     @EventSourcingHandler

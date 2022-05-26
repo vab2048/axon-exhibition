@@ -42,7 +42,7 @@ public class AccountAggregateMessageGenerator {
         var accountId = UUID.randomUUID();
         var emailAddress = RandomStringUtils.randomAlphabetic(8) + "@" + RandomStringUtils.randomAlphabetic(5) + ".com";
         var cmd = new CreateNewAccountCommand(accountId, emailAddress);
-        var evt = new NewAccountCreatedEvent(accountId, emailAddress);
+        var evt = new NewAccountCreatedEvent(accountId, emailAddress, 0L);
         return new AccountCreation(cmd, evt);
     }
 
