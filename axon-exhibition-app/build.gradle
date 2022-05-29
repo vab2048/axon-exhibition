@@ -39,5 +39,5 @@ flyway {
     url = 'jdbc:postgresql://localhost:5432/axon-exhibition'
     user = 'postgres'
     password = 'password'
-    schemas = [ 'public', 'command_side', 'query_side' ]
+    schemas = [ 'public', 'axon', 'command_side', 'query_side' ]
 }

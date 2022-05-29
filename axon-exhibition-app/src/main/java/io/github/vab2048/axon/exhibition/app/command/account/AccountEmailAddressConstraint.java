@@ -10,8 +10,9 @@ import java.util.UUID;
  * Entity for maintaining the illustrative invariant that the email address associated with an account
  * is unique across all accounts.
  */
-@Table("account_email_address_constraint")
+@Table(AccountEmailAddressConstraint.TABLE_NAME)
 public record AccountEmailAddressConstraint(
         @Id @Column("account_id") UUID accountId,
         @Column("email_address") String emailAddress) {
+    public static final String TABLE_NAME = "command_side\".\"account_email_address_constraint";
 }
