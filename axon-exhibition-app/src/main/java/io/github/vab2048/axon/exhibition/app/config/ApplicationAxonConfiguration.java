@@ -4,18 +4,19 @@ import io.github.vab2048.axon.exhibition.app.command.account.AccountEmailAddress
 import org.axonframework.common.jdbc.ConnectionProvider;
 import org.axonframework.common.transaction.TransactionManager;
 import org.axonframework.config.ConfigurationScopeAwareProvider;
-import org.axonframework.config.Configurer;
 import org.axonframework.config.EventProcessingConfigurer;
 import org.axonframework.deadline.SimpleDeadlineManager;
 import org.axonframework.eventhandling.PropagatingErrorHandler;
 import org.axonframework.eventhandling.tokenstore.jdbc.JdbcTokenStore;
 import org.axonframework.eventhandling.tokenstore.jdbc.TokenSchema;
+import org.axonframework.eventsourcing.EventCountSnapshotTriggerDefinition;
+import org.axonframework.eventsourcing.SnapshotTriggerDefinition;
+import org.axonframework.eventsourcing.Snapshotter;
 import org.axonframework.eventsourcing.eventstore.EmbeddedEventStore;
 import org.axonframework.eventsourcing.eventstore.EventStorageEngine;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.axonframework.eventsourcing.eventstore.jdbc.EventSchema;
 import org.axonframework.eventsourcing.eventstore.jdbc.JdbcEventStorageEngine;
-import org.axonframework.lifecycle.Phase;
 import org.axonframework.messaging.Message;
 import org.axonframework.messaging.interceptors.LoggingInterceptor;
 import org.axonframework.modelling.saga.repository.jdbc.JdbcSagaStore;
@@ -38,19 +39,17 @@ public class ApplicationAxonConfiguration {
     private static final Logger log = LoggerFactory.getLogger(ApplicationAxonConfiguration.class);
     private static final LoggingInterceptor<Message<?>> LOGGING_INTERCEPTOR = new LoggingInterceptor<>();
 
+    /* *************************************************************************************
+     * Persistence Related...
+     * *************************************************************************************/
+
     /* Table names for the app's command side */
-    private static final String DB_SCHEMA_COMMAND_SIDE = "command_side";
-    private static final String DB_DOMAIN_EVENTS_TABLE_NAME = DB_SCHEMA_COMMAND_SIDE + "." + "domainevententry";
-    private static final String DB_SNAPSHOTS_TABLE_NAME = DB_SCHEMA_COMMAND_SIDE + "." + "snapshotevententry";
-
-    // Saga related table names
-    private static final String DB_SAGA_ENTRY_TABLE_NAME = DB_SCHEMA_COMMAND_SIDE + "." + "sagaentry";
-    private static final String DB_SAGA_ASSOC_VALUE_ENTRY_TABLE_NAME = DB_SCHEMA_COMMAND_SIDE + "." + "associationvalueentry";
-
-    /* Table names for the app's query side */
-    private static final String DB_SCHEMA_QUERY_SIDE = "query_side";
-    private static final String DB_TOKEN_ENTRY_TABLE = DB_SCHEMA_QUERY_SIDE + "."+ "tokenentry";
-
+    private static final String AXON_DB_SCHEMA = "axon";
+    private static final String DB_DOMAIN_EVENTS_TABLE_NAME = AXON_DB_SCHEMA + "." + "domainevententry";
+    private static final String DB_SNAPSHOTS_TABLE_NAME = AXON_DB_SCHEMA + "." + "snapshotevententry";
+    private static final String DB_SAGA_ENTRY_TABLE_NAME = AXON_DB_SCHEMA + "." + "sagaentry";
+    private static final String DB_SAGA_ASSOC_VALUE_ENTRY_TABLE_NAME = AXON_DB_SCHEMA + "." + "associationvalueentry";
+    private static final String DB_TOKEN_ENTRY_TABLE = AXON_DB_SCHEMA + "."+ "tokenentry";
 
     @Bean
     public EventStorageEngine eventStorageEngine(
@@ -112,6 +111,30 @@ public class ApplicationAxonConfiguration {
                 .build();
     }
 
+    /* *************************************************************************************
+     * Logging...
+     * *************************************************************************************/
+
+//    @Autowired
+//    public void configureLoggingInterceptor(
+//            @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") Configurer configurer) {
+//        // Registers the LoggingInterceptor on all infrastructure once they've been initialized by the Configurer:
+//        configurer.onInitialize(config -> {
+//            config.onStart(Phase.INSTRUCTION_COMPONENTS + 1, () -> {
+//                config.commandBus().registerHandlerInterceptor(LOGGING_INTERCEPTOR);
+//                config.commandBus().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
+//                config.eventBus().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
+//                config.queryBus().registerHandlerInterceptor(LOGGING_INTERCEPTOR);
+//                config.queryBus().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
+//                config.queryUpdateEmitter().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
+//            });
+//        });
+//    }
+
+    /* *************************************************************************************
+     * Deadlines...
+     * *************************************************************************************/
+
     @Bean
     public SimpleDeadlineManager simpleDeadlineManager(
             @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") AxonConfiguration configuration,
@@ -122,29 +145,12 @@ public class ApplicationAxonConfiguration {
                 .build();
     }
 
-    @Autowired
-    public void configureLoggingInterceptor(
-            @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") Configurer configurer) {
-        // Registers the LoggingInterceptor on all infrastructure once they've been initialized by the Configurer:
-        configurer.onInitialize(config -> {
-            config.onStart(Phase.INSTRUCTION_COMPONENTS + 1, () -> {
-                config.commandBus().registerHandlerInterceptor(LOGGING_INTERCEPTOR);
-                config.commandBus().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
-                config.eventBus().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
-                config.queryBus().registerHandlerInterceptor(LOGGING_INTERCEPTOR);
-                config.queryBus().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
-                config.queryUpdateEmitter().registerDispatchInterceptor(LOGGING_INTERCEPTOR);
-            });
-        });
-    }
-
-
+    /* *************************************************************************************
+     * Processing Groups...
+     * *************************************************************************************/
 
     @Autowired
-    public void configureProcessingGroupErrorHandling(EventProcessingConfigurer processingConfigurer) {
-        // Defaults for all handlers...
-        processingConfigurer.registerDefaultHandlerInterceptor((config, processorName) -> LOGGING_INTERCEPTOR);
-
+    public void configureEventProcessingGroups(EventProcessingConfigurer processingConfigurer) {
         // Specific configuration for the AccountEmailAddressConstraintProjection processing group...
         // - As a subscribing event processor
         // - Which propagates errors.
@@ -153,5 +159,15 @@ public class ApplicationAxonConfiguration {
                 conf -> PropagatingErrorHandler.instance());
     }
 
+    /* *************************************************************************************
+     * Snapshotting...
+     * *************************************************************************************/
+    public static final String ACCOUNT_AGGREGATE_SNAPSHOT_TRIGGER_DEFINITION_BEAN_NAME = "accountAggregateSnapshotTrigger";
+    public static final int ACCOUNT_AGGREGATE_EVENT_COUNT_SNAPSHOT_TRIGGER = 3;
+    @Bean(ACCOUNT_AGGREGATE_SNAPSHOT_TRIGGER_DEFINITION_BEAN_NAME)
+    public SnapshotTriggerDefinition accountAggregateSnapshotTrigger(Snapshotter snapshotter) {
+        // After 3 events take a snapshot (this number is low just so we can see trigger a snapshot easily).
+        return new EventCountSnapshotTriggerDefinition(snapshotter, ACCOUNT_AGGREGATE_EVENT_COUNT_SNAPSHOT_TRIGGER);
+    }
 
 }

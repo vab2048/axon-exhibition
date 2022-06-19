@@ -38,17 +38,25 @@ public class AccountEmailAddressConstraintProjection {
         jdbcAggregateTemplate.insert(new AccountEmailAddressConstraint(accountId, emailAddress));
     }
 
+    /**
+     * Message which will used in the exception thrown because of a duplicate key at the point of account creation.
+     */
+    public static String accountCreationDuplicateKeyExceptionMessage(String emailAddress) {
+        return "Account creation rejected as email address (%s) is already in use.".formatted(emailAddress);
+    }
+
     /*
      * Handle the situation where a DbActionExecutionException is thrown when processing a NewAccountCreatedEvent.
      */
     @ExceptionHandler
     void handleException(NewAccountCreatedEvent evt, DbActionExecutionException ex) {
-        // Where the specific cause is a DuplicateKeyException then we know that we have avoided breaking the
+        // Where the specific cause is a DuplicateKeyException then we know that we have broken the
         // uniqueness constraint, and so we rethrow a more specific exception.
+        // It is assumed it is the email address constraint just for simplicity (although in reality it could
+        // actually be the primary key constraint).
         DuplicateKeyException duplicateKeyException = ExceptionUtils.throwableOfType(ex, DuplicateKeyException.class);
         if(duplicateKeyException != null) {
-            String msg = "Account creation rejected as email address (%s) is already in use.".formatted(evt.emailAddress());
-            throw new IllegalStateException(msg, duplicateKeyException);
+            throw new IllegalStateException(accountCreationDuplicateKeyExceptionMessage(evt.emailAddress()), duplicateKeyException);
         }
 
         // Otherwise: we just throw the general exception up the stack.

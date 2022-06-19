@@ -1,5 +1,6 @@
 package io.github.vab2048.axon.exhibition.app.command.account;
 
+import io.github.vab2048.axon.exhibition.app.config.ApplicationAxonConfiguration;
 import io.github.vab2048.axon.exhibition.message_api.command.AccountCommandMessageAPI.*;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
+import static io.github.vab2048.axon.exhibition.app.config.ApplicationAxonConfiguration.ACCOUNT_AGGREGATE_SNAPSHOT_TRIGGER_DEFINITION_BEAN_NAME;
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
 /**
@@ -18,17 +20,45 @@ import static org.axonframework.modelling.command.AggregateLifecycle.apply;
  * This is just a bare-bones implementation for the purpose of a demo.
  * It does not do anything special to deal with negative balances.
  */
-@Aggregate
+@Aggregate(snapshotTriggerDefinition = ACCOUNT_AGGREGATE_SNAPSHOT_TRIGGER_DEFINITION_BEAN_NAME)
 public class AccountAggregate {
     private static final Logger log = LoggerFactory.getLogger(AccountAggregate.class);
 
+    /* *****************************************************
+     * Fields
+     * *****************************************************/
+
+    // Since we are using Jackson as a serializer we unfortunately need getters and setters for each field
+    // otherwise state will not be persisted when we take a snapshot.
+
+    /**
+     * Identifier for the account.
+     */
     @AggregateIdentifier
     private UUID accountId;
+
+    public UUID getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(UUID accountId) {
+        this.accountId = accountId;
+    }
 
     /**
      * Balance of the account in pennies.
      */
     private long balance;
+
+    public long getBalance() {
+        return balance;
+    }
+
+    public void setBalance(long balance) {
+        this.balance = balance;
+    }
+
+    // -------------------------------------------------------------------------------
 
     @Deprecated
     AccountAggregate() { /* For framework use only. */ }
@@ -46,6 +76,8 @@ public class AccountAggregate {
         this.accountId = evt.accountId();
         this.balance = 0L;
     }
+
+    // -------------------------------------------------------------------------------
 
     @CommandHandler
     void handle(CreditAccountCommand cmd) {

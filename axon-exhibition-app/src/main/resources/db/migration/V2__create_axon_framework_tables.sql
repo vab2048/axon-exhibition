@@ -2,6 +2,7 @@
  * Create tables and indexes required by the Axon Framework within a schema called "axon".
  * See: https://docs.axoniq.io/reference-guide/appendices/rdbms-tuning
  */
+CREATE SCHEMA IF NOT EXISTS "axon";
 
 /* *****************************************************************************
  *                            DOMAIN EVENT ENTRY                               *
