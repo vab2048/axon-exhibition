@@ -4,6 +4,18 @@ plugins {
     id 'java'
 }
 
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+testing {
+    suites {
+        // Add an additional 'integrationTest' source set.
+        integrationTest(JvmTestSuite) {}
+    }
+}
+
+
 dependencies {
     implementation project(":axon-exhibition-message-api")
 
@@ -26,18 +38,48 @@ dependencies {
     testImplementation project(":axon-exhibition-test-utils")
     testImplementation libs.axon.test
     testImplementation libs.spring.boot.starter.test
+
+
+    integrationTestImplementation project
+    integrationTestImplementation project(":axon-exhibition-message-api")
+    integrationTestImplementation project(":axon-exhibition-test-utils")
+    integrationTestImplementation platform(libs.spring.boot.bom)
+    integrationTestImplementation platform(libs.axon.bom)
+    integrationTestImplementation libs.bundles.apache.commons
+    integrationTestImplementation libs.axon.spring.boot.starter
+    integrationTestImplementation libs.axon.test
+    integrationTestImplementation libs.spring.boot.starter.test
+    integrationTestImplementation libs.testContainers
+    integrationTestImplementation libs.testContainers.postgresql
+    integrationTestImplementation libs.testContainers.jupiter.extension
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
-}
+/* ********************************************************************************************
+ * DB Related...
+ * ********************************************************************************************/
+
+def final DB_DOCKER_IMAGE_NAME = "vab2048/axon-exhibition-db:SNAPSHOT"
+def final DB_DOCKERFILE_PATH = "./DB.Dockerfile"
 
 /*
  * Adjust these settings to have the flyway plugin perform migrations on the specified postgres instance.
  */
 flyway {
-    url = 'jdbc:postgresql://localhost:5432/axon-exhibition'
+    url = 'jdbc:postgresql://localhost:5432/axon_exhibition'
     user = 'postgres'
     password = 'password'
     schemas = [ 'public', 'axon', 'command_side', 'query_side' ]
+}
+
+/**
+ * Build the docker image for the application database.
+ *
+ * type: Exec - indicates this task will execute a command line process
+ */
+task dbBuildImage(type: Exec) {
+    group 'build'
+    description "Build the docker image for the application's DB"
+    workingDir '.'
+
+    commandLine "docker", "build", "--no-cache", "--tag", "${DB_DOCKER_IMAGE_NAME}", "-f",  "${DB_DOCKERFILE_PATH}", "."
 }
