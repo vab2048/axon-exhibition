@@ -22,16 +22,19 @@ import java.util.UUID;
 
 import static io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.EXAMPLE_UUID_VALUE;
 
-@Tags(value = @Tag(name = "Accounts", description = "Manage our faux 'bank' accounts."))
+@Tags(value = @Tag(name = Accounts.OPEN_API_TAG_NAME, description = "Manage our faux 'bank' accounts."))
 public interface Accounts {
+    /* *********************** Endpoint Constants **********************/
+    String OPEN_API_TAG_NAME = "Accounts";
+
+
+    /* ***************************** API *******************************/
 
     @Operation(summary = "Create a new account. The email address must be unique across all accounts.",
             operationId = "create-new-account")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Account Created",
             content = @Content(schema = @Schema(implementation = CreateAccountResponseBody.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-            content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @PostMapping("/accounts")
     ResponseEntity<CreateAccountResponseBody> createNewAccount(CreateAccountRequestBody requestBody);
@@ -41,8 +44,6 @@ public interface Accounts {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Accounts State",
                     content = @Content(schema = @Schema(implementation = GetAccountsQueryResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @GetMapping("/accounts")
     GetAccountsQueryResponse getAccounts();
@@ -53,10 +54,13 @@ public interface Accounts {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Account State",
                     content = @Content(schema = @Schema(implementation = AccountView.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @GetMapping("/accounts/{id}")
     AccountView getAccount(@PathVariable @Parameter(example = EXAMPLE_UUID_VALUE) UUID id);
+
+
+    /* ************************ API Documentation **********************/
+
+
 
 }

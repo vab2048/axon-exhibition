@@ -17,16 +17,21 @@ import java.util.UUID;
 
 import static io.github.vab2048.axon.exhibition.app.controller.dto.ControllerDTOs.*;
 
-@Tags(value = @Tag(name = "Payments", description = "Make a payment between two bank accounts."))
+@Tags(value = @Tag(name = Payments.OPEN_API_TAG_NAME, description = "Make a payment between two bank accounts."))
 public interface Payments {
+    /* *********************** Endpoint Constants **********************/
+    String OPEN_API_TAG_NAME = "Payments";
+
+    /* ***************************** API *******************************/
+
+    /* ************************ API Documentation **********************/
+
 
     @Operation(summary = "Make a payment between two accounts.",
             operationId = "make-payment")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Payment Created",
                     content = @Content(schema = @Schema(implementation = MakePaymentResponseBody.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @PostMapping("/payments")
     ResponseEntity<MakePaymentResponseBody> makePayment(@RequestBody MakePaymentRequestBody requestBody);
@@ -36,8 +41,6 @@ public interface Payments {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Payments State",
                     content = @Content(schema = @Schema(implementation = GetPaymentsQueryResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @GetMapping("/payments/")
     GetPaymentsQueryResponse getPayments();
@@ -47,8 +50,6 @@ public interface Payments {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Payment State",
                     content = @Content(schema = @Schema(implementation = PaymentView.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @GetMapping("/payments/{id}")
     PaymentView getPaymentView(@PathVariable @Parameter(example = EXAMPLE_UUID_VALUE) UUID id);
@@ -60,8 +61,6 @@ public interface Payments {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Payment Created",
                     content = @Content(schema = @Schema(implementation = MakeScheduledPaymentResponseBody.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @PostMapping("/scheduled-payments")
     ResponseEntity<MakeScheduledPaymentResponseBody> createdScheduledPayment(MakeScheduledPaymentRequestBody requestBody);
@@ -70,8 +69,6 @@ public interface Payments {
             operationId = "cancel-payment")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Cancelled"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @DeleteMapping("/scheduled-payments/{id}")
     ResponseEntity<?> cancelScheduledPayment(@PathVariable @Parameter(example = EXAMPLE_UUID_VALUE) UUID id);

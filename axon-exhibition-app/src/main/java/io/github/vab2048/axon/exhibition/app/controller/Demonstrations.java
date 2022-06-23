@@ -11,9 +11,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.web.bind.annotation.GetMapping;
 
-@Tags(value = @Tag(name = "Example Demonstrations", description = """
+@Tags(value = @Tag(name = Demonstrations.OPEN_API_TAG_NAME, description = """
         Hit an endpoint to demonstrate a specific feature of the Axon Framework."""))
 public interface Demonstrations {
+    /* *********************** Endpoint Constants **********************/
+    String OPEN_API_TAG_NAME = "Example Demonstrations";
+
+    /* ***************************** API *******************************/
+
+    /* ************************ API Documentation **********************/
+
     String COMMON_DESCRIPTION_SET_BASED_VALIDATION = """
         # Set based validation scenario brief:
         
@@ -44,8 +51,6 @@ public interface Demonstrations {
                     """
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @GetMapping("demo/set-based-validation/consistency-at-aggregate-threshold")
     void setBasedValidation1();
@@ -64,8 +69,6 @@ public interface Demonstrations {
                     its respective aggregate.
                     """)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @GetMapping("demo/set-based-validation/consistency-at-multiple-aggregate-threshold")
     void setBasedValidation2();
@@ -74,8 +77,6 @@ public interface Demonstrations {
             Issue a number of commands which will trigger the snapshotting of an account aggregate.""",
             operationId = "trigger-account-snapshot")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = InternalServerErrorResponseBody.class)))
     })
     @GetMapping("/demo/trigger-account-snapshot")
     void triggerAccountSnapshot();
