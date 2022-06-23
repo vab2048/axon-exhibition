@@ -26,6 +26,7 @@ dependencies {
     implementation libs.bundles.apache.commons
 
     implementation libs.axon.spring.boot.starter
+    implementation libs.guava
 
     implementation libs.spring.boot.starter
     implementation libs.spring.boot.starter.web

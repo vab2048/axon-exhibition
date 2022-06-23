@@ -22,6 +22,8 @@ dataFaker = { module = "net.datafaker:datafaker", version = "1.3.0" }
 easyRandom = { module = "org.jeasy:easy-random-core", version = "5.0.0" }
 easyTuples = { module = "io.github.easytuples:easy-tuples", version = "1.0.0" }
 
+guava = { module = "com.google.guava:guava", version = "31.1-jre" }
+
 postgresql = { module = "org.postgresql:postgresql" }
 
 ########################################################################
