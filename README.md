@@ -4,36 +4,33 @@
 
 Welcome to the Axon Exhibition. 
 
-The purpose of this repository is to illustrate usage of the Axon Framework and act as a reference example.
-Technologies used include:
+The purpose of this repository is to illustrate usage of the Axon Framework and act as a reference example for myself and others. Technologies used include:
 - Spring Boot
     - Spring Data JDBC
 - Axon Framework
-    - Event Store: PostgreSQL (JDBC)
-    - Message Router:  Axon Server
-    - Query Side: PostgreSQL
-    - Serializer: Jackson
+    - Command Side: PostgreSQL
+    - Query Side: PostgreSQL 
+    - Message Router: Axon Server
+    - Serializer: JSON (using Jackson)
 - Java 17
     - Records
-    - module-info.java
 - Gradle
-    - Version catalogues (see `gradle/libs.versions.toml`)
+    - Multi project build 
+    - Version catalogues
+- Flyway
+ 
+## Domain
 
-## TODO
+The application models a simple banking domain where you have accounts which can make payments to each other. 
+There is a (somewhat nonsensical) constraint that each account needs to be associated with an email address which 
+is unique across all accounts. 
 
-- Do controller OpenAPI documentation - tidy things up
-- Finish controller endpoint (return 201) and other endpoints
-- Add workflow simulator endpoints to the controller.
-- Add a deadline for a scheduled payment
-- Add unit tests
-- Add integration tests
-- Add snapshots to aggregates.
-- Add a subscription query
-- Understand why `@QueryHandler` annotated methods cause issues with the Java module system.
-- Fix up SQL - command side and query side schemas don't make sense when the saga (command side) goes in the
-  token_entry table (which is currently in the query side schema)
-- Look at documentation for indexes and see how SQL compares.
-  - Understand and remove unnecessary tables/sequences
+![Account and Payment Endpoints](https://user-images.githubusercontent.com/9255825/175385458-9af21fcf-6e5a-49b8-bcf8-b25cb4d114fe.png)
+
+A number of convenience endpoints also exist to demonstrate a specific feature:
+
+![Example Demonstration Endpoints](https://user-images.githubusercontent.com/9255825/175385491-75d77842-deb3-43dc-94fc-37890600d352.png)
+
 
 ## Usage
 
@@ -46,17 +43,43 @@ Technologies used include:
 7. Check `localhost:8080/swagger-ui.html` for the swagger UI and play around with the app.
     - Inspect the DB to see how everything is persisted (JSON).
 
-## Domain
+# Feature Exhibition
 
-The application models a simple banking domain where you have accounts which can make payments to each other.
-
-## Issues
-
-There are a number of open issues related to
-
+- Aggregates
+  - Polymorphic aggregates 
+- Sagas
+- Deadlines
+- Set based validation/command side projection
+- Command Handling
+  - Using a routing key (for a command handler not attached to an aggregate)
+  - Using the SimpleCommandBus
+- Queries 
+- Configuration:
+  - Propagating error handler
+  - Simple Deadline Manager
+- Unit Tests
+- Integration Tests
 
 ## Reference Resources
 
 A number of other projects were useful as references to build this project:
 - [The Axon Bank application](https://github.com/AxonFramework/AxonBank)
 - [JohT's Showcase](https://github.com/JohT/showcase-quarkus-eventsourcing)
+
+## TODO
+
+- Add integration tests
+  - Use testcontainers
+  - snapshot taken test
+  - scenarios: break account email constraint
+    - payment, immediate pyament, scheduled payment
+- Add a subscription query
+- Understand why `@QueryHandler` annotated methods cause issues with the Java module system.
+- Look at documentation for indexes and see how SQL compares.
+  - Understand and remove unnecessary tables/sequences
+- Update the OpenAPI documentation to include:
+  - common 500 response
+  - respond with actual `ResponseEntity<T>` where T is a response for the endpoint.
+  - description for all endpoints
+  - sorting the endpoints so that the "example demonstrations" is at the top
+- Write out this README adding screenshots if need be.
